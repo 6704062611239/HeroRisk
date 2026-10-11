@@ -1,13 +1,23 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.herorisk;
 
-/**
- *
- * @author User
- */
-public class Hero {
-    
+import java.awt.Image;
+
+public class Hero extends Character {
+
+    public Hero(int hp, int atk, Image sprite) {
+        super(hp, atk, sprite);
+    }
+
+    public void setAtk(int atk) {
+        this.atk = atk;
+    }
+
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
+
+    public void addMaxHp(int amount) {
+        this.maxHp += amount;
+        this.hp = this.maxHp; 
+    }
 }

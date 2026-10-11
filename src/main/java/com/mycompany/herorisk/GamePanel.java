@@ -11,8 +11,11 @@ import java.io.File;
 import javax.imageio.ImageIO;
 
 public class GamePanel extends JPanel implements Runnable {
+
     final int screenWidth = 800;
     final int screenHeight = 600;
+
+    int gameState = 0;
 
     Thread gameThread;
     Image bgImage;
@@ -26,7 +29,26 @@ public class GamePanel extends JPanel implements Runnable {
     int btn2X = 300, btn2Y = 400;
     int btn3X = 500, btn3Y = 400;
 
-    int gameState = 0;
+    Image btnBack;
+    int backX = 25;
+    int backY = 25;
+    int backWidth = 60;
+    int backHeight = 60;
+
+    Image btnPlay;
+    int playX, playY, playW, playH;
+
+    Image bgStageWater;
+    Image bgStageFire;
+    Image bgStageEarth;
+
+    Image Hero;
+    Image enemy1W, enemy2W, enemy3W;
+    Image enemy1F, enemy2F, enemy3F;
+    Image enemy1E, enemy2E, enemy3E;
+
+    Hero playerHero;
+    Minigame activeMinigame;
 
     public GamePanel() throws Exception {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -38,6 +60,52 @@ public class GamePanel extends JPanel implements Runnable {
         btnStage2 = ImageIO.read(new File("res/btn_stage2.jpg"));
         btnStage3 = ImageIO.read(new File("res/btn_stage3.jpg"));
 
+        bgStageWater = ImageIO.read(new File("res/bg_water.jpg"));
+        bgStageFire = ImageIO.read(new File("res/bg_fire.jpg"));
+        bgStageEarth = ImageIO.read(new File("res/bg_earth.jpg"));
+
+        btnBack = ImageIO.read(new File("res/back_btn.png"));
+        btnPlay = ImageIO.read(new File("res/play.jpg"));
+
+        Hero = ImageIO.read(new File("res/hero.png"));
+        enemy1W = ImageIO.read(new File("res/enemy1W.png"));
+        enemy2W = ImageIO.read(new File("res/enemy2W.png"));
+        enemy3W = ImageIO.read(new File("res/enemy3W.png"));
+        enemy1F = ImageIO.read(new File("res/enemy1F.png"));
+        enemy2F = ImageIO.read(new File("res/enemy2F.png"));
+        enemy3F = ImageIO.read(new File("res/enemy3F.png"));
+        enemy1E = ImageIO.read(new File("res/enemy1E.png"));
+        enemy2E = ImageIO.read(new File("res/enemy2E.png"));
+        enemy3E = ImageIO.read(new File("res/enemy3E.png"));
+
+        playerHero = new Hero(100, 15, Hero);
+
+        this.setFocusable(true);
+
+        this.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                if (activeMinigame != null) {
+                    if (e.getKeyCode() == java.awt.event.KeyEvent.VK_SPACE) {
+                        activeMinigame.checkHit();
+                    }
+                    if (activeMinigame instanceof FireMinigame) {
+                        ((FireMinigame) activeMinigame).handleKeyPress(e.getKeyCode());
+                    }
+                    if (activeMinigame instanceof EarthMinigame) {
+                        ((EarthMinigame) activeMinigame).handleKeyPressed(e.getKeyCode());
+                    }
+                }
+            }
+
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent e) {
+                if (activeMinigame instanceof EarthMinigame) {
+                    ((EarthMinigame) activeMinigame).handleKeyReleased(e.getKeyCode());
+                }
+            }
+        });
+
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -45,17 +113,51 @@ public class GamePanel extends JPanel implements Runnable {
                 int mouseY = e.getY();
 
                 if (gameState == 0) {
-                    if (mouseX >= btn1X && mouseX <= btn1X + btnWidth &&
-                        mouseY >= btn1Y && mouseY <= btn1Y + btnHeight) {
+                    if (mouseX >= btn1X && mouseX <= btn1X + btnWidth
+                            && mouseY >= btn1Y && mouseY <= btn1Y + btnHeight) {
                         gameState = 1;
-                    }
-                    else if (mouseX >= btn2X && mouseX <= btn2X + btnWidth &&
-                             mouseY >= btn2Y && mouseY <= btn2Y + btnHeight) {
+                    } else if (mouseX >= btn2X && mouseX <= btn2X + btnWidth
+                            && mouseY >= btn2Y && mouseY <= btn2Y + btnHeight) {
                         gameState = 2;
-                    }
-                    else if (mouseX >= btn3X && mouseX <= btn3X + btnWidth &&
-                             mouseY >= btn3Y && mouseY <= btn3Y + btnHeight) {
+                    } else if (mouseX >= btn3X && mouseX <= btn3X + btnWidth
+                            && mouseY >= btn3Y && mouseY <= btn3Y + btnHeight) {
                         gameState = 3;
+                    }
+                } else if (gameState == 1 || gameState == 2 || gameState == 3) {
+                    if (mouseX >= backX && mouseX <= backX + backWidth
+                            && mouseY >= backY && mouseY <= backY + backHeight) {
+                        gameState = 0;
+                    } else if (mouseX >= playX && mouseX <= playX + playW
+                            && mouseY >= playY && mouseY <= playY + playH) {
+                        if (gameState == 1) {
+                            activeMinigame = new WaterMinigame(playerHero, enemy1W, enemy2W, enemy3W);
+                            activeMinigame.start();
+                            gameState = 10;
+                        } else if (gameState == 2) {
+                            activeMinigame = new FireMinigame(playerHero, enemy1F, enemy2F, enemy3F);
+                            activeMinigame.start();
+                            gameState = 20;
+                        } else if (gameState == 3) {
+                            activeMinigame = new EarthMinigame(playerHero, enemy1E, enemy2E, enemy3E);
+                            activeMinigame.start();
+                            gameState = 30;
+                        }
+                    }
+                } else if (gameState >= 10) {
+                    if (mouseX >= backX && mouseX <= backX + backWidth
+                            && mouseY >= backY && mouseY <= backY + backHeight) {
+                        gameState = 0;
+                    } else {
+                        if (activeMinigame != null) {
+                            if (activeMinigame instanceof WaterMinigame) {
+                                WaterMinigame waterGame = (WaterMinigame) activeMinigame;
+                                if (waterGame.isUpgrading()) {
+                                    waterGame.handleUpgradeClick(mouseX, mouseY);
+                                    return;
+                                }
+                            }
+                            activeMinigame.checkHit();
+                        }
                     }
                 }
             }
@@ -81,6 +183,9 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
+        if (gameState >= 10 && activeMinigame != null) {
+            activeMinigame.update();
+        }
     }
 
     @Override
@@ -91,26 +196,21 @@ public class GamePanel extends JPanel implements Runnable {
         int screenH = getHeight();
 
         if (gameState == 0) {
-            if (bgImage != null) {
-                g2.drawImage(bgImage, 0, 0, screenW, screenH, this);
-            }
+            g2.drawImage(bgImage, 0, 0, screenW, screenH, this);
 
-            if (logoImage != null) {
-                int logoWidth = (int) (screenW * 0.65); 
-                int logoHeight = (int) (logoWidth * 0.35); 
-                int logoX = (screenW - logoWidth) / 2;     
-                int logoY = (int) (screenH * 0.12);        
+            int logoWidth = (int) (screenW * 0.65);
+            int logoHeight = (int) (logoWidth * 0.35);
+            int logoX = (screenW - logoWidth) / 2;
+            int logoY = (int) (screenH * 0.12);
+            g2.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight, this);
 
-                g2.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight, this);
-            }
-
-            btnWidth = (int) (screenW * 0.18);  
-            btnHeight = (int) (btnWidth * 0.45); 
-            int gap = (int) (screenW * 0.03);   
+            btnWidth = (int) (screenW * 0.18);
+            btnHeight = (int) (btnWidth * 0.45);
+            int gap = (int) (screenW * 0.03);
 
             int totalButtonsWidth = (btnWidth * 3) + (gap * 2);
             int startX = (screenW - totalButtonsWidth) / 2;
-            int buttonsY = (int) (screenH * 0.58); 
+            int buttonsY = (int) (screenH * 0.58);
 
             btn1X = startX;
             btn1Y = buttonsY;
@@ -121,16 +221,91 @@ public class GamePanel extends JPanel implements Runnable {
             btn3X = startX + (btnWidth + gap) * 2;
             btn3Y = buttonsY;
 
-            if (btnStage1 != null) g2.drawImage(btnStage1, btn1X, btn1Y, btnWidth, btnHeight, this);
-            if (btnStage2 != null) g2.drawImage(btnStage2, btn2X, btn2Y, btnWidth, btnHeight, this);
-            if (btnStage3 != null) g2.drawImage(btnStage3, btn3X, btn3Y, btnWidth, btnHeight, this);
+            g2.drawImage(btnStage1, btn1X, btn1Y, btnWidth, btnHeight, this);
+            g2.drawImage(btnStage2, btn2X, btn2Y, btnWidth, btnHeight, this);
+            g2.drawImage(btnStage3, btn3X, btn3Y, btnWidth, btnHeight, this);
 
-        } else if (gameState == 1) {
-            g2.drawString("Welcome to Stage Water", 350, 300);
-        } else if (gameState == 2) {
-            g2.drawString("Welcome to Stage Fire", 350, 300);
-        } else if (gameState == 3) {
-            g2.drawString("Welcome to Stage Earth", 350, 300);
+        } else {
+            if (gameState == 1) {
+                g2.drawImage(bgStageWater, 0, 0, screenW, screenH, this);
+            } else if (gameState == 2) {
+                g2.drawImage(bgStageFire, 0, 0, screenW, screenH, this);
+            } else if (gameState == 3) {
+                g2.drawImage(bgStageEarth, 0, 0, screenW, screenH, this);
+            }
+            backWidth = (int) (screenW * 0.06);
+            backHeight = backWidth;
+            g2.drawImage(btnBack, backX, backY, backWidth, backHeight, this);
+
+            playW = (int) (screenW * 0.12);
+            playH = (int) (playW * 0.45);
+            playX = screenW - playW - 25;
+            playY = screenH - playH - 25;
+            g2.drawImage(btnPlay, playX, playY, playW, playH, this);
+
+            int heroW = (int) (screenW * 0.15);
+            int heroH = (int) (heroW * 1.2);
+            int heroX = (screenW - heroW) / 2;
+            int heroY = (int) (screenH * 0.65);
+
+            int smallEnemyW = (int) (screenW * 0.11);
+            int smallEnemyH = (int) (smallEnemyW * 1.2);
+            int enemy1X = (int) (screenW * 0.18);
+            int enemy1Y = (int) (screenH * 0.48);
+            int enemy2X = (int) (screenW * 0.72);
+            int enemy2Y = (int) (screenH * 0.48);
+            int bigEnemyW = (int) (screenW * 0.18);
+            int bigEnemyH = (int) (bigEnemyW * 1.3);
+            int enemy3X = (screenW - bigEnemyW) / 2;
+            int enemy3Y = (int) (screenH * 0.15);
+
+            if (gameState == 1) {
+                g2.drawImage(Hero, heroX, heroY, heroW, heroH, this);
+                g2.drawImage(enemy1W, enemy1X, enemy1Y, smallEnemyW, smallEnemyH, this);
+                g2.drawImage(enemy2W, enemy2X, enemy2Y, smallEnemyW, smallEnemyH, this);
+                g2.drawImage(enemy3W, enemy3X, enemy3Y, bigEnemyW, bigEnemyH, this);
+            } else if (gameState == 2) {
+                g2.drawImage(Hero, heroX, heroY, heroW, heroH, this);
+                g2.drawImage(enemy1F, enemy1X, enemy1Y, smallEnemyW, smallEnemyH, this);
+                g2.drawImage(enemy2F, enemy2X, enemy2Y, smallEnemyW, smallEnemyH, this);
+                g2.drawImage(enemy3F, enemy3X, enemy3Y, bigEnemyW, bigEnemyH, this);
+            } else if (gameState == 3) {
+                g2.drawImage(Hero, heroX, heroY, heroW, heroH, this);
+                g2.drawImage(enemy1E, enemy1X, enemy1Y, smallEnemyW, smallEnemyH, this);
+                g2.drawImage(enemy2E, enemy2X, enemy2Y, smallEnemyW, smallEnemyH, this);
+                g2.drawImage(enemy3E, enemy3X, enemy3Y, bigEnemyW, bigEnemyH, this);
+            } else if (gameState == 10) {
+                if (bgStageWater != null) {
+                    g2.drawImage(bgStageWater, 0, 0, screenW, screenH, this);
+                }
+                if (btnBack != null) {
+                    g2.drawImage(btnBack, backX, backY, backWidth, backHeight, this);
+                }
+                if (activeMinigame != null) {
+                    activeMinigame.draw(g2, screenW, screenH);
+                }
+            } else if (gameState == 20) {
+                if (bgStageFire != null) {
+                    g2.drawImage(bgStageFire, 0, 0, screenW, screenH, this);
+                }
+                if (btnBack != null) {
+                    g2.drawImage(btnBack, backX, backY, backWidth, backHeight, this);
+                }
+                if (activeMinigame != null) {
+                    activeMinigame.draw(g2, screenW, screenH);
+                }
+            } else if (gameState == 30) {
+                if (bgStageEarth != null) {
+                    g2.drawImage(bgStageEarth, 0, 0, screenW, screenH, this);
+                }
+                if (btnBack != null) {
+                    g2.drawImage(btnBack, backX, backY, backWidth, backHeight, this);
+                }
+
+                if (activeMinigame != null) {
+                    activeMinigame.draw(g2, screenW, screenH);
+                }
+            }
         }
         g2.dispose();
     }

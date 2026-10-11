@@ -1,13 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.herorisk;
 
-/**
- *
- * @author User
- */
-public class Enemy {
-    
+import java.awt.Image;
+
+public class Enemy extends Character {
+    private String name;
+
+    public Enemy(String name, int hp, int atk, Image sprite) {
+        super(hp, atk, sprite);
+        this.name = name;
+    }
+
+    public String getName() { return name; }
 }

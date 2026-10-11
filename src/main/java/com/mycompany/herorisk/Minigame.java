@@ -1,13 +1,20 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.herorisk;
 
-/**
- *
- * @author User
- */
-public class Minigame {
-    
+import java.awt.Graphics2D;
+
+public abstract class Minigame {
+    protected Hero hero;
+    protected Enemy currentEnemy;
+    protected boolean isFinished = false;
+
+    public Minigame(Hero hero) {
+        this.hero = hero;
+    }
+
+    public abstract void start();
+    public abstract void update();
+    public abstract void draw(Graphics2D g2, int screenW, int screenH);
+    public abstract void checkHit(); 
+
+    public boolean isFinished() { return isFinished; }
 }
