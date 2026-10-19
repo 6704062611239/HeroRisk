@@ -9,6 +9,7 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Random;
+import java.awt.image.BufferedImage;
 
 public class EarthMinigame extends Minigame {
 
@@ -36,23 +37,27 @@ public class EarthMinigame extends Minigame {
 
     private String message;
 
+    private Image weaponImage;
+
     private class Rock {
+
         int targetX, targetY;
         int currentY;
-        int warningTimer = 30; 
+        int warningTimer = 30;
         boolean isDropped = false;
         int size = 40;
 
         public Rock(int x, int y) {
             this.targetX = x;
             this.targetY = y;
-            this.currentY = y - 300; 
+            this.currentY = y - 300;
         }
     }
 
     private class Sword {
+
         int x, y;
-        int size = 30;
+        int size = 35;
 
         public Sword(int x, int y) {
             this.x = x;
@@ -60,13 +65,39 @@ public class EarthMinigame extends Minigame {
         }
     }
 
-    public EarthMinigame(Hero hero, Image enemy1, Image enemy2, Image enemy3) {
+    public EarthMinigame(Hero hero, Image enemy1, Image enemy2, Image enemy3, Image weaponImage) {
         super(hero);
+
+        BufferedImage[] golemFrames = new BufferedImage[2];
+        try {
+            golemFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy1E.png"));
+            golemFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy1E2.png")); 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        BufferedImage[] elementalFrames = new BufferedImage[2];
+        try {
+            elementalFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2E2.png")); 
+            elementalFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2E3.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        BufferedImage[] bossFrames = new BufferedImage[2];
+        try {
+            bossFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy3E.png"));
+            bossFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy3E2.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         enemies = new Enemy[]{
-            new Enemy("Earth Golem", 80, 12, enemy1),
-            new Enemy("Rock Elemental", 130, 18, enemy2),
-            new Enemy("Earth BOSS", 220, 28, enemy3)
+            new Enemy("Earth Golem", 80, 12, golemFrames),
+            new Enemy("Rock Elemental", 130, 18, elementalFrames),
+            new Enemy("Earth BOSS", 220, 28, bossFrames)
         };
+        this.weaponImage = weaponImage;
     }
 
     @Override
@@ -93,32 +124,58 @@ public class EarthMinigame extends Minigame {
     }
 
     public void handleKeyPressed(int keyCode) {
-        if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) moveUp = true;
-        if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) moveDown = true;
-        if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_LEFT) moveLeft = true;
-        if (keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_RIGHT) moveRight = true;
+        if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) {
+            moveUp = true;
+        }
+        if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) {
+            moveDown = true;
+        }
+        if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_LEFT) {
+            moveLeft = true;
+        }
+        if (keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_RIGHT) {
+            moveRight = true;
+        }
     }
 
     public void handleKeyReleased(int keyCode) {
-        if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) moveUp = false;
-        if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) moveDown = false;
-        if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_LEFT) moveLeft = false;
-        if (keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_RIGHT) moveRight = false;
+        if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) {
+            moveUp = false;
+        }
+        if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) {
+            moveDown = false;
+        }
+        if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_LEFT) {
+            moveLeft = false;
+        }
+        if (keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_RIGHT) {
+            moveRight = false;
+        }
     }
 
     @Override
     public void update() {
-        if (isFinished || !hero.isAlive() || !currentEnemy.isAlive()) return;
+        if (isFinished || !hero.isAlive() || !currentEnemy.isAlive()) {
+            return;
+        }
 
-        if (moveUp && heroY > arenaY) heroY -= heroSpeed;
-        if (moveDown && heroY + heroH < arenaY + arenaH) heroY += heroSpeed;
-        if (moveLeft && heroX > arenaX) heroX -= heroSpeed;
-        if (moveRight && heroX + heroW < arenaX + arenaW) heroX += heroSpeed;
+        if (moveUp && heroY > arenaY) {
+            heroY -= heroSpeed;
+        }
+        if (moveDown && heroY + heroH < arenaY + arenaH) {
+            heroY += heroSpeed;
+        }
+        if (moveLeft && heroX > arenaX) {
+            heroX -= heroSpeed;
+        }
+        if (moveRight && heroX + heroW < arenaX + arenaW) {
+            heroX += heroSpeed;
+        }
 
-        Rectangle heroRect = new Rectangle((int)heroX, (int)heroY, heroW, heroH);
+        Rectangle heroRect = new Rectangle((int) heroX, (int) heroY, heroW, heroH);
 
         rockSpawnTimer++;
-        if (rockSpawnTimer >= 40 - (currentWave * 8)) { 
+        if (rockSpawnTimer >= 40 - (currentWave * 8)) {
             rockSpawnTimer = 0;
             int rx = arenaX + random.nextInt(Math.max(1, arenaW - 40));
             int ry = arenaY + random.nextInt(Math.max(1, arenaH - 40));
@@ -126,9 +183,9 @@ public class EarthMinigame extends Minigame {
         }
 
         swordSpawnTimer++;
-        if (swordSpawnTimer >= 90) { 
+        if (swordSpawnTimer >= 90) {
             swordSpawnTimer = 0;
-            if (swords.size() < 3) { 
+            if (swords.size() < 3) {
                 int sx = arenaX + random.nextInt(Math.max(1, arenaW - 30));
                 int sy = arenaY + random.nextInt(Math.max(1, arenaH - 30));
                 swords.add(new Sword(sx, sy));
@@ -181,7 +238,8 @@ public class EarthMinigame extends Minigame {
     }
 
     @Override
-    public void checkHit() {}
+    public void checkHit() {
+    }
 
     @Override
     public void draw(Graphics2D g2, int screenW, int screenH) {
@@ -213,14 +271,18 @@ public class EarthMinigame extends Minigame {
         }
 
         for (Sword sword : swords) {
-            g2.setColor(Color.YELLOW);
-            g2.fillOval(sword.x, sword.y, sword.size, sword.size);
-            g2.setColor(Color.BLACK);
-            g2.setFont(new Font("Tahoma", Font.BOLD, 18));
-            g2.drawString("🗡", sword.x + 6, sword.y + 23);
+            if (weaponImage != null) {
+                g2.drawImage(weaponImage, sword.x, sword.y, sword.size, sword.size, null);
+            } else {
+                g2.setColor(Color.YELLOW);
+                g2.fillOval(sword.x, sword.y, sword.size, sword.size);
+                g2.setColor(Color.BLACK);
+                g2.setFont(new Font("Tahoma", Font.BOLD, 18));
+                g2.drawString("🗡", sword.x + 6, sword.y + 23);
+            }
         }
 
-        hero.draw(g2, (int)heroX, (int)heroY, heroW, heroH);
+        hero.draw(g2, (int) heroX, (int) heroY, heroW, heroH);
 
         int enemyW = (currentWave == 2) ? (int) (screenW * 0.22) : (int) (screenW * 0.17);
         int enemyH = (int) (enemyW * 1.2);
@@ -241,6 +303,6 @@ public class EarthMinigame extends Minigame {
 
         g2.setFont(new Font("Tahoma", Font.BOLD, 18));
         g2.setColor(Color.YELLOW);
-        g2.drawString(message, (screenW - g2.getFontMetrics().stringWidth(message)) / 2, (int)(screenH * 0.10));
+        g2.drawString(message, (screenW - g2.getFontMetrics().stringWidth(message)) / 2, (int) (screenH * 0.10));
     }
 }

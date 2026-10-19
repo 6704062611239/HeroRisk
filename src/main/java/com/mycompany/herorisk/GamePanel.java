@@ -15,7 +15,7 @@ public class GamePanel extends JPanel implements Runnable {
     final int screenWidth = 800;
     final int screenHeight = 600;
 
-    int gameState = 0;
+    int gameState = 0; 
 
     Thread gameThread;
     Image bgImage;
@@ -35,20 +35,18 @@ public class GamePanel extends JPanel implements Runnable {
     int backWidth = 60;
     int backHeight = 60;
 
-    Image btnPlay;
-    int playX, playY, playW, playH;
-
     Image bgStageWater;
     Image bgStageFire;
     Image bgStageEarth;
 
-    Image Hero;
     Image enemy1W, enemy2W, enemy3W;
     Image enemy1F, enemy2F, enemy3F;
     Image enemy1E, enemy2E, enemy3E;
 
     Hero playerHero;
     Minigame activeMinigame;
+    
+    Image weapon;
 
     public GamePanel() throws Exception {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -65,9 +63,7 @@ public class GamePanel extends JPanel implements Runnable {
         bgStageEarth = ImageIO.read(new File("res/bg_earth.jpg"));
 
         btnBack = ImageIO.read(new File("res/back_btn.png"));
-        btnPlay = ImageIO.read(new File("res/play.jpg"));
 
-        Hero = ImageIO.read(new File("res/hero.png"));
         enemy1W = ImageIO.read(new File("res/enemy1W.png"));
         enemy2W = ImageIO.read(new File("res/enemy2W.png"));
         enemy3W = ImageIO.read(new File("res/enemy3W.png"));
@@ -77,8 +73,10 @@ public class GamePanel extends JPanel implements Runnable {
         enemy1E = ImageIO.read(new File("res/enemy1E.png"));
         enemy2E = ImageIO.read(new File("res/enemy2E.png"));
         enemy3E = ImageIO.read(new File("res/enemy3E.png"));
+        
+        weapon = ImageIO.read(new File("res/weapon.png"));
 
-        playerHero = new Hero(100, 15, Hero);
+        playerHero = new Hero(100, 15);
 
         this.setFocusable(true);
 
@@ -113,39 +111,21 @@ public class GamePanel extends JPanel implements Runnable {
                 int mouseY = e.getY();
 
                 if (gameState == 0) {
-                    if (mouseX >= btn1X && mouseX <= btn1X + btnWidth
-                            && mouseY >= btn1Y && mouseY <= btn1Y + btnHeight) {
-                        gameState = 1;
-                    } else if (mouseX >= btn2X && mouseX <= btn2X + btnWidth
-                            && mouseY >= btn2Y && mouseY <= btn2Y + btnHeight) {
-                        gameState = 2;
-                    } else if (mouseX >= btn3X && mouseX <= btn3X + btnWidth
-                            && mouseY >= btn3Y && mouseY <= btn3Y + btnHeight) {
-                        gameState = 3;
-                    }
-                } else if (gameState == 1 || gameState == 2 || gameState == 3) {
-                    if (mouseX >= backX && mouseX <= backX + backWidth
-                            && mouseY >= backY && mouseY <= backY + backHeight) {
-                        gameState = 0;
-                    } else if (mouseX >= playX && mouseX <= playX + playW
-                            && mouseY >= playY && mouseY <= playY + playH) {
-                        if (gameState == 1) {
-                            activeMinigame = new WaterMinigame(playerHero, enemy1W, enemy2W, enemy3W);
-                            activeMinigame.start();
-                            gameState = 10;
-                        } else if (gameState == 2) {
-                            activeMinigame = new FireMinigame(playerHero, enemy1F, enemy2F, enemy3F);
-                            activeMinigame.start();
-                            gameState = 20;
-                        } else if (gameState == 3) {
-                            activeMinigame = new EarthMinigame(playerHero, enemy1E, enemy2E, enemy3E);
-                            activeMinigame.start();
-                            gameState = 30;
-                        }
+                    if (mouseX >= btn1X && mouseX <= btn1X + btnWidth && mouseY >= btn1Y && mouseY <= btn1Y + btnHeight) {
+                        activeMinigame = new WaterMinigame(playerHero, enemy1W, enemy2W, enemy3W);
+                        activeMinigame.start();
+                        gameState = 10;
+                    } else if (mouseX >= btn2X && mouseX <= btn2X + btnWidth && mouseY >= btn2Y && mouseY <= btn2Y + btnHeight) {
+                        activeMinigame = new FireMinigame(playerHero, enemy1F, enemy2F, enemy3F, weapon);
+                        activeMinigame.start();
+                        gameState = 20;
+                    } else if (mouseX >= btn3X && mouseX <= btn3X + btnWidth && mouseY >= btn3Y && mouseY <= btn3Y + btnHeight) {
+                        activeMinigame = new EarthMinigame(playerHero, enemy1E, enemy2E, enemy3E, weapon);
+                        activeMinigame.start();
+                        gameState = 30;
                     }
                 } else if (gameState >= 10) {
-                    if (mouseX >= backX && mouseX <= backX + backWidth
-                            && mouseY >= backY && mouseY <= backY + backHeight) {
+                    if (mouseX >= backX && mouseX <= backX + backWidth && mouseY >= backY && mouseY <= backY + backHeight) {
                         gameState = 0;
                     } else {
                         if (activeMinigame != null) {
@@ -225,87 +205,21 @@ public class GamePanel extends JPanel implements Runnable {
             g2.drawImage(btnStage2, btn2X, btn2Y, btnWidth, btnHeight, this);
             g2.drawImage(btnStage3, btn3X, btn3Y, btnWidth, btnHeight, this);
 
-        } else {
-            if (gameState == 1) {
-                g2.drawImage(bgStageWater, 0, 0, screenW, screenH, this);
-            } else if (gameState == 2) {
-                g2.drawImage(bgStageFire, 0, 0, screenW, screenH, this);
-            } else if (gameState == 3) {
-                g2.drawImage(bgStageEarth, 0, 0, screenW, screenH, this);
-            }
-            backWidth = (int) (screenW * 0.06);
-            backHeight = backWidth;
+        } else if (gameState == 10) {
+            g2.drawImage(bgStageWater, 0, 0, screenW, screenH, this);
             g2.drawImage(btnBack, backX, backY, backWidth, backHeight, this);
+            activeMinigame.draw(g2, screenW, screenH);
 
-            playW = (int) (screenW * 0.12);
-            playH = (int) (playW * 0.45);
-            playX = screenW - playW - 25;
-            playY = screenH - playH - 25;
-            g2.drawImage(btnPlay, playX, playY, playW, playH, this);
+        } else if (gameState == 20) {
+            g2.drawImage(bgStageFire, 0, 0, screenW, screenH, this);
+            g2.drawImage(btnBack, backX, backY, backWidth, backHeight, this);
+            activeMinigame.draw(g2, screenW, screenH);
 
-            int heroW = (int) (screenW * 0.15);
-            int heroH = (int) (heroW * 1.2);
-            int heroX = (screenW - heroW) / 2;
-            int heroY = (int) (screenH * 0.65);
+        } else if (gameState == 30) {
+            g2.drawImage(bgStageEarth, 0, 0, screenW, screenH, this);
+            g2.drawImage(btnBack, backX, backY, backWidth, backHeight, this);
+            activeMinigame.draw(g2, screenW, screenH);
 
-            int smallEnemyW = (int) (screenW * 0.11);
-            int smallEnemyH = (int) (smallEnemyW * 1.2);
-            int enemy1X = (int) (screenW * 0.18);
-            int enemy1Y = (int) (screenH * 0.48);
-            int enemy2X = (int) (screenW * 0.72);
-            int enemy2Y = (int) (screenH * 0.48);
-            int bigEnemyW = (int) (screenW * 0.18);
-            int bigEnemyH = (int) (bigEnemyW * 1.3);
-            int enemy3X = (screenW - bigEnemyW) / 2;
-            int enemy3Y = (int) (screenH * 0.15);
-
-            if (gameState == 1) {
-                g2.drawImage(Hero, heroX, heroY, heroW, heroH, this);
-                g2.drawImage(enemy1W, enemy1X, enemy1Y, smallEnemyW, smallEnemyH, this);
-                g2.drawImage(enemy2W, enemy2X, enemy2Y, smallEnemyW, smallEnemyH, this);
-                g2.drawImage(enemy3W, enemy3X, enemy3Y, bigEnemyW, bigEnemyH, this);
-            } else if (gameState == 2) {
-                g2.drawImage(Hero, heroX, heroY, heroW, heroH, this);
-                g2.drawImage(enemy1F, enemy1X, enemy1Y, smallEnemyW, smallEnemyH, this);
-                g2.drawImage(enemy2F, enemy2X, enemy2Y, smallEnemyW, smallEnemyH, this);
-                g2.drawImage(enemy3F, enemy3X, enemy3Y, bigEnemyW, bigEnemyH, this);
-            } else if (gameState == 3) {
-                g2.drawImage(Hero, heroX, heroY, heroW, heroH, this);
-                g2.drawImage(enemy1E, enemy1X, enemy1Y, smallEnemyW, smallEnemyH, this);
-                g2.drawImage(enemy2E, enemy2X, enemy2Y, smallEnemyW, smallEnemyH, this);
-                g2.drawImage(enemy3E, enemy3X, enemy3Y, bigEnemyW, bigEnemyH, this);
-            } else if (gameState == 10) {
-                if (bgStageWater != null) {
-                    g2.drawImage(bgStageWater, 0, 0, screenW, screenH, this);
-                }
-                if (btnBack != null) {
-                    g2.drawImage(btnBack, backX, backY, backWidth, backHeight, this);
-                }
-                if (activeMinigame != null) {
-                    activeMinigame.draw(g2, screenW, screenH);
-                }
-            } else if (gameState == 20) {
-                if (bgStageFire != null) {
-                    g2.drawImage(bgStageFire, 0, 0, screenW, screenH, this);
-                }
-                if (btnBack != null) {
-                    g2.drawImage(btnBack, backX, backY, backWidth, backHeight, this);
-                }
-                if (activeMinigame != null) {
-                    activeMinigame.draw(g2, screenW, screenH);
-                }
-            } else if (gameState == 30) {
-                if (bgStageEarth != null) {
-                    g2.drawImage(bgStageEarth, 0, 0, screenW, screenH, this);
-                }
-                if (btnBack != null) {
-                    g2.drawImage(btnBack, backX, backY, backWidth, backHeight, this);
-                }
-
-                if (activeMinigame != null) {
-                    activeMinigame.draw(g2, screenW, screenH);
-                }
-            }
         }
         g2.dispose();
     }

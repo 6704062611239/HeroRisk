@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 public class WaterMinigame extends Minigame {
 
@@ -17,16 +18,37 @@ public class WaterMinigame extends Minigame {
     private int targetArcAngle = 45;
     private String message = "";
 
-    private boolean isUpgrading = false; 
-    private int btnAtkX, btnAtkY, btnAtkW, btnAtkH;
-    private int btnHpX, btnHpY, btnHpH, btnHpW;
-
     public WaterMinigame(Hero hero, Image enemy1, Image enemy2, Image enemy3) {
         super(hero);
+
+        BufferedImage[] slimeFrames = new BufferedImage[2];
+        try {
+            slimeFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy1W.png"));
+            slimeFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy1W2.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        BufferedImage[] warriorFrames = new BufferedImage[2];
+        try {
+            warriorFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2W2.png")); 
+            warriorFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2W3.png")); 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        BufferedImage[] bossFrames = new BufferedImage[2];
+        try {
+            bossFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy3W.png"));
+            bossFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy3W2.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         enemies = new Enemy[]{
-            new Enemy("Water Slime", 50, 8, enemy1),
-            new Enemy("Water Warrior", 80, 12, enemy2),
-            new Enemy("Water BOSS", 150, 20, enemy3)
+            new Enemy("Water Slime", 50, 8, slimeFrames),
+            new Enemy("Water Warrior", 80, 12, warriorFrames),
+            new Enemy("Water BOSS", 150, 20, bossFrames)
         };
     }
 
@@ -34,7 +56,6 @@ public class WaterMinigame extends Minigame {
     public void start() {
         hero.resetHp();
         currentWave = 0;
-        isUpgrading = false;
         loadWave(currentWave);
         isFinished = false;
     }
@@ -47,14 +68,16 @@ public class WaterMinigame extends Minigame {
 
     @Override
     public void update() {
-        if (!isFinished && !isUpgrading && currentEnemy.isAlive() && hero.isAlive()) {
+        if (!isFinished && currentEnemy.isAlive() && hero.isAlive()) {
             arrowAngle = (arrowAngle + arrowSpeed) % 360;
         }
     }
 
     @Override
     public void checkHit() {
-        if (isFinished || isUpgrading || !currentEnemy.isAlive() || !hero.isAlive()) return;
+        if (isFinished || !currentEnemy.isAlive() || !hero.isAlive()) {
+            return;
+        }
 
         double currentAngle = arrowAngle % 360;
 
@@ -68,8 +91,9 @@ public class WaterMinigame extends Minigame {
 
         if (!currentEnemy.isAlive()) {
             if (currentWave < enemies.length - 1) {
-                hero.resetHp(); 
-                isUpgrading = true;
+                currentWave++;
+                hero.resetHp();
+                loadWave(currentWave);
             } else {
                 message = "VICTORY!";
                 isFinished = true;
@@ -80,23 +104,12 @@ public class WaterMinigame extends Minigame {
         }
     }
 
-    public void handleUpgradeClick(int mouseX, int mouseY) {
-        if (!isUpgrading) return;
-
-        if (mouseX >= btnAtkX && mouseX <= btnAtkX + btnAtkW && mouseY >= btnAtkY && mouseY <= btnAtkY + btnAtkH) {
-            hero.setAtk(hero.getAtk() + 5);
-            nextWaveAfterUpgrade();
-        } 
-        else if (mouseX >= btnHpX && mouseX <= btnHpX + btnHpW && mouseY >= btnHpY && mouseY <= btnHpY + btnHpH) {
-            hero.addMaxHp(30);
-            nextWaveAfterUpgrade();
-        }
+    public boolean isUpgrading() {
+        return false;
     }
 
-    private void nextWaveAfterUpgrade() {
-        isUpgrading = false;
-        currentWave++;
-        loadWave(currentWave);
+    public void handleUpgradeClick(int mouseX, int mouseY) {
+        
     }
 
     @Override
@@ -123,40 +136,6 @@ public class WaterMinigame extends Minigame {
         g2.fillRect(enemyX, enemyY + enemyH + 10, enemyW, 30);
         g2.setColor(Color.RED);
         g2.drawString("HP: " + currentEnemy.getHp() + " | ATK: " + currentEnemy.getAtk(), enemyX + 10, enemyY + enemyH + 30);
-
-        if (isUpgrading) {
-            g2.setColor(new Color(0, 0, 0, 200));
-            g2.fillRect(0, 0, screenW, screenH);
-
-            g2.setFont(new Font("Tahoma", Font.BOLD, 26));
-            g2.setColor(Color.YELLOW);
-            String title = "STAGE CLEARED!";
-            g2.drawString(title, (screenW - g2.getFontMetrics().stringWidth(title)) / 2, (int)(screenH * 0.35));
-
-            btnAtkW = 220; btnAtkH = 60;
-            btnHpW = 220;  btnHpH = 60;
-
-            btnAtkX = screenW / 2 - 240;
-            btnAtkY = (int)(screenH * 0.48);
-
-            btnHpX = screenW / 2 + 20;
-            btnHpY = (int)(screenH * 0.48);
-
-            g2.setColor(new Color(231, 76, 60));
-            g2.fillRect(btnAtkX, btnAtkY, btnAtkW, btnAtkH);
-            g2.setColor(Color.WHITE);
-            g2.drawRect(btnAtkX, btnAtkY, btnAtkW, btnAtkH);
-            g2.setFont(new Font("Tahoma", Font.BOLD, 20));
-            g2.drawString("+5 ATK", btnAtkX + 15, btnAtkY + 38);
-
-            g2.setColor(new Color(46, 204, 113));
-            g2.fillRect(btnHpX, btnHpY, btnHpW, btnHpH);
-            g2.setColor(Color.WHITE);
-            g2.drawRect(btnHpX, btnHpY, btnHpW, btnHpH);
-            g2.drawString("+30 HP", btnHpX + 20, btnHpY + 38);
-
-            return; 
-        }
 
         int circleSize = (int) (screenW * 0.18);
         int circleX = (screenW - circleSize) / 2;
@@ -191,6 +170,4 @@ public class WaterMinigame extends Minigame {
         g2.setColor(Color.YELLOW);
         g2.drawString(message, (screenW - g2.getFontMetrics().stringWidth(message)) / 2, circleY + circleSize + 45);
     }
-
-    public boolean isUpgrading() { return isUpgrading; }
 }

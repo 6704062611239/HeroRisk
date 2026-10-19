@@ -27,9 +27,19 @@ public abstract class Character {
         }
     }
 
-    public int getHp() { return hp; }
-    public int getMaxHp() { return maxHp; }
-    public int getAtk() { return atk; }
-    public boolean isAlive() { return hp > 0; }
-    public void resetHp() { this.hp = this.maxHp; }
+    public int getHp() { 
+        return hp; 
+    }
+    public int getMaxHp() { 
+        return maxHp; 
+    }
+    public int getAtk() { 
+        return atk; 
+    }
+    public boolean isAlive() { 
+        return hp > 0; 
+    }
+    public void resetHp() { 
+        this.hp = this.maxHp; 
+    }
 }

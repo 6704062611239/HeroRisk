@@ -16,5 +16,7 @@ public abstract class Minigame {
     public abstract void draw(Graphics2D g2, int screenW, int screenH);
     public abstract void checkHit(); 
 
-    public boolean isFinished() { return isFinished; }
+    public boolean isFinished() { 
+        return isFinished; 
+    }
 }
