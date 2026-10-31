@@ -25,6 +25,10 @@ public class FireMinigame extends Minigame {
     private String message;
 
     private Image weaponImage;
+    private Image fireballImage;
+
+    private Image victoryImage;
+    private Image gameOverImage;
 
     private class GameObject {
 
@@ -39,29 +43,43 @@ public class FireMinigame extends Minigame {
         }
     }
 
-    public FireMinigame(Hero hero, Image enemy1, Image enemy2, Image enemy3, Image weaponImage) {
+    public FireMinigame(Hero hero, Image weaponImage) {
         super(hero);
 
         BufferedImage[] impFrames = new BufferedImage[2];
         try {
             impFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy1F.png"));
-            impFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy1F2.png")); 
+            impFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy1F2.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        BufferedImage[] demonFrames = new BufferedImage[2];
+
+        BufferedImage[] demonFrames = new BufferedImage[3];
         try {
-            demonFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2F2.png")); 
-            demonFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2F3.png"));
+            demonFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2F.png"));
+            demonFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2F2.png"));
+            demonFrames[2] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2F3.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         BufferedImage[] bossFrames = new BufferedImage[2];
         try {
             bossFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy3F.png"));
             bossFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy3F3.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            this.fireballImage = javax.imageio.ImageIO.read(new java.io.File("res/fireball.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            victoryImage = javax.imageio.ImageIO.read(new java.io.File("res/victory.png"));
+            gameOverImage = javax.imageio.ImageIO.read(new java.io.File("res/gameover.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -87,7 +105,7 @@ public class FireMinigame extends Minigame {
     private void loadWave(int waveIndex) {
         currentEnemy = enemies[waveIndex];
         objectSpeed = 6.0 + (waveIndex * 2.0);
-        message = "Wave " + (waveIndex + 1) + " " + currentEnemy.getName();
+        message = "Wave " + (waveIndex + 1) + " " + currentEnemy.getName() + "!";
     }
 
     public void handleKeyPress(int keyCode) {
@@ -196,26 +214,41 @@ public class FireMinigame extends Minigame {
                     g2.drawString("🗡", (int) obj.x + 8, objY + 24);
                 }
             } else {
-                g2.setColor(Color.RED);
-                g2.fillOval((int) obj.x, objY, objSize, objSize);
-                g2.setColor(Color.ORANGE);
-                g2.fillOval((int) obj.x + 5, objY + 5, objSize - 10, objSize - 10);
+                if (fireballImage != null) {
+                    g2.drawImage(fireballImage, (int) obj.x, objY, objSize, objSize, null);
+                } else {
+                    g2.setColor(Color.RED);
+                    g2.fillOval((int) obj.x, objY, objSize, objSize);
+                }
             }
         }
 
         g2.setFont(new Font("Tahoma", Font.BOLD, 16));
+
         g2.setColor(new Color(0, 0, 0, 180));
-        g2.fillRect(heroX - 10, screenH - 80, 200, 35);
+        g2.fillRect(heroX - 10, screenH - 60, 220, 35);
         g2.setColor(Color.GREEN);
-        g2.drawString("Hero HP: " + hero.getHp() + "/" + hero.getMaxHp(), heroX, screenH - 57);
+        g2.drawString("HP: " + hero.getHp() + " | ATK: " + hero.getAtk(), heroX, screenH - 37);
 
         g2.setColor(new Color(0, 0, 0, 180));
-        g2.fillRect(enemyX - 10, screenH - 80, 210, 35);
+        g2.fillRect(enemyX - 10, screenH - 60, 220, 35);
         g2.setColor(Color.RED);
-        g2.drawString(currentEnemy.getName() + " HP: " + currentEnemy.getHp(), enemyX, screenH - 57);
+        g2.drawString("HP: " + currentEnemy.getHp() + " | ATK: " + currentEnemy.getAtk(), enemyX, screenH - 37);
 
-        g2.setFont(new Font("Tahoma", Font.BOLD, 18));
-        g2.setColor(Color.YELLOW);
-        g2.drawString(message, (screenW - g2.getFontMetrics().stringWidth(message)) / 2, (int) (screenH * 0.20));
+        if (isFinished) {
+            g2.setColor(new Color(0, 0, 0, 180));
+            g2.fillRect(0, 0, screenW, screenH);
+            if ("VICTORY!".equals(message) && victoryImage != null) {
+                g2.drawImage(victoryImage, 0, 0, screenW, screenH, null);
+            } else if ("GAME OVER!".equals(message) && gameOverImage != null) {
+                g2.drawImage(gameOverImage, 0, 0, screenW, screenH, null);
+            }
+        } else if (message != null && !message.isEmpty()) {
+            g2.setFont(new Font("Tahoma", Font.BOLD, 22));
+            g2.setColor(Color.YELLOW);
+            int textWidth = g2.getFontMetrics().stringWidth(message);
+            g2.drawString(message, (screenW - textWidth) / 2, (int) (screenH * 0.10));
+        }
+
     }
 }

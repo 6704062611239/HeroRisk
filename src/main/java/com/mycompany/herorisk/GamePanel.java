@@ -112,15 +112,15 @@ public class GamePanel extends JPanel implements Runnable {
 
                 if (gameState == 0) {
                     if (mouseX >= btn1X && mouseX <= btn1X + btnWidth && mouseY >= btn1Y && mouseY <= btn1Y + btnHeight) {
-                        activeMinigame = new WaterMinigame(playerHero, enemy1W, enemy2W, enemy3W);
+                        activeMinigame = new WaterMinigame(playerHero);
                         activeMinigame.start();
                         gameState = 10;
                     } else if (mouseX >= btn2X && mouseX <= btn2X + btnWidth && mouseY >= btn2Y && mouseY <= btn2Y + btnHeight) {
-                        activeMinigame = new FireMinigame(playerHero, enemy1F, enemy2F, enemy3F, weapon);
+                        activeMinigame = new FireMinigame(playerHero, weapon);
                         activeMinigame.start();
                         gameState = 20;
                     } else if (mouseX >= btn3X && mouseX <= btn3X + btnWidth && mouseY >= btn3Y && mouseY <= btn3Y + btnHeight) {
-                        activeMinigame = new EarthMinigame(playerHero, enemy1E, enemy2E, enemy3E, weapon);
+                        activeMinigame = new EarthMinigame(playerHero, weapon);
                         activeMinigame.start();
                         gameState = 30;
                     }
@@ -129,13 +129,6 @@ public class GamePanel extends JPanel implements Runnable {
                         gameState = 0;
                     } else {
                         if (activeMinigame != null) {
-                            if (activeMinigame instanceof WaterMinigame) {
-                                WaterMinigame waterGame = (WaterMinigame) activeMinigame;
-                                if (waterGame.isUpgrading()) {
-                                    waterGame.handleUpgradeClick(mouseX, mouseY);
-                                    return;
-                                }
-                            }
                             activeMinigame.checkHit();
                         }
                     }

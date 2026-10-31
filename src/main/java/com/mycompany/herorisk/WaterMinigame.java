@@ -18,7 +18,10 @@ public class WaterMinigame extends Minigame {
     private int targetArcAngle = 45;
     private String message = "";
 
-    public WaterMinigame(Hero hero, Image enemy1, Image enemy2, Image enemy3) {
+    private Image victoryImage;
+    private Image gameOverImage;
+
+    public WaterMinigame(Hero hero) {
         super(hero);
 
         BufferedImage[] slimeFrames = new BufferedImage[2];
@@ -29,10 +32,11 @@ public class WaterMinigame extends Minigame {
             e.printStackTrace();
         }
 
-        BufferedImage[] warriorFrames = new BufferedImage[2];
+        BufferedImage[] warriorFrames = new BufferedImage[3];
         try {
-            warriorFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2W2.png")); 
-            warriorFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2W3.png")); 
+            warriorFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2W.png"));
+            warriorFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2W2.png"));
+            warriorFrames[2] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2W3.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,6 +45,13 @@ public class WaterMinigame extends Minigame {
         try {
             bossFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy3W.png"));
             bossFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy3W2.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            victoryImage = javax.imageio.ImageIO.read(new java.io.File("res/victory.png"));
+            gameOverImage = javax.imageio.ImageIO.read(new java.io.File("res/gameover.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,7 +73,7 @@ public class WaterMinigame extends Minigame {
 
     private void loadWave(int waveIndex) {
         currentEnemy = enemies[waveIndex];
-        arrowSpeed = 5.0 + (waveIndex * 2.5);
+        arrowSpeed = 5.0 + (waveIndex * 1.5);
         message = "Wave " + (waveIndex + 1) + " " + currentEnemy.getName() + "!";
     }
 
@@ -83,16 +94,13 @@ public class WaterMinigame extends Minigame {
 
         if (currentAngle >= targetStartAngle && currentAngle <= (targetStartAngle + targetArcAngle)) {
             currentEnemy.takeDamage(hero.getAtk());
-            message = "HIT! " + currentEnemy.getName() + " " + hero.getAtk();
         } else {
             hero.takeDamage(currentEnemy.getAtk());
-            message = "MISS! " + currentEnemy.getName() + " " + currentEnemy.getAtk();
         }
 
         if (!currentEnemy.isAlive()) {
             if (currentWave < enemies.length - 1) {
                 currentWave++;
-                hero.resetHp();
                 loadWave(currentWave);
             } else {
                 message = "VICTORY!";
@@ -102,14 +110,6 @@ public class WaterMinigame extends Minigame {
             message = "GAME OVER!";
             isFinished = true;
         }
-    }
-
-    public boolean isUpgrading() {
-        return false;
-    }
-
-    public void handleUpgradeClick(int mouseX, int mouseY) {
-        
     }
 
     @Override
@@ -166,8 +166,19 @@ public class WaterMinigame extends Minigame {
         g2.setColor(Color.RED);
         g2.fillOval(arrowX - 8, arrowY - 8, 16, 16);
 
-        g2.setFont(new Font("Tahoma", Font.BOLD, 18));
-        g2.setColor(Color.YELLOW);
-        g2.drawString(message, (screenW - g2.getFontMetrics().stringWidth(message)) / 2, circleY + circleSize + 45);
+        if (isFinished) {
+            g2.setColor(new Color(0, 0, 0, 180));
+            g2.fillRect(0, 0, screenW, screenH);
+            if ("VICTORY!".equals(message) && victoryImage != null) {
+                g2.drawImage(victoryImage, 0, 0, screenW, screenH, null);
+            } else if ("GAME OVER!".equals(message) && gameOverImage != null) {
+                g2.drawImage(gameOverImage, 0, 0, screenW, screenH, null);
+            }
+        } else if (message != null && !message.isEmpty()) {
+            g2.setFont(new Font("Tahoma", Font.BOLD, 22));
+            g2.setColor(Color.YELLOW);
+            int textWidth = g2.getFontMetrics().stringWidth(message);
+            g2.drawString(message, (screenW - textWidth) / 2, (int) (screenH * 0.10));
+        }
     }
 }

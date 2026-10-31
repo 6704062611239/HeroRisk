@@ -38,7 +38,6 @@ public class Hero extends Character {
                 }
             }
         });
-
         animThread.start();
     }
 

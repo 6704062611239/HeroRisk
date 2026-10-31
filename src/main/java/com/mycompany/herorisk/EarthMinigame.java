@@ -38,6 +38,10 @@ public class EarthMinigame extends Minigame {
     private String message;
 
     private Image weaponImage;
+    private Image rockImage;
+    
+    private Image victoryImage;
+    private Image gameOverImage;
 
     private class Rock {
 
@@ -65,20 +69,20 @@ public class EarthMinigame extends Minigame {
         }
     }
 
-    public EarthMinigame(Hero hero, Image enemy1, Image enemy2, Image enemy3, Image weaponImage) {
+    public EarthMinigame(Hero hero, Image weaponImage) {
         super(hero);
 
         BufferedImage[] golemFrames = new BufferedImage[2];
         try {
             golemFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy1E.png"));
-            golemFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy1E2.png")); 
+            golemFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy1E2.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         BufferedImage[] elementalFrames = new BufferedImage[2];
         try {
-            elementalFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2E2.png")); 
+            elementalFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2E2.png"));
             elementalFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2E3.png"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -88,6 +92,19 @@ public class EarthMinigame extends Minigame {
         try {
             bossFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy3E.png"));
             bossFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy3E2.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            this.rockImage = javax.imageio.ImageIO.read(new java.io.File("res/rock.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        try {
+            victoryImage = javax.imageio.ImageIO.read(new java.io.File("res/victory.png"));
+            gameOverImage = javax.imageio.ImageIO.read(new java.io.File("res/gameover.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -262,11 +279,15 @@ public class EarthMinigame extends Minigame {
                 g2.setStroke(new BasicStroke(2));
                 g2.drawOval(rock.targetX, rock.targetY, rock.size, rock.size);
             } else {
-                g2.setColor(new Color(130, 95, 65));
-                g2.fillOval(rock.targetX, rock.currentY, rock.size, rock.size);
-                g2.setColor(Color.BLACK);
-                g2.setStroke(new BasicStroke(2));
-                g2.drawOval(rock.targetX, rock.currentY, rock.size, rock.size);
+                if (rockImage != null) {
+                    g2.drawImage(rockImage, rock.targetX, rock.currentY, rock.size, rock.size, null);
+                } else {
+                    g2.setColor(new Color(130, 95, 65));
+                    g2.fillOval(rock.targetX, rock.currentY, rock.size, rock.size);
+                    g2.setColor(Color.BLACK);
+                    g2.setStroke(new BasicStroke(2));
+                    g2.drawOval(rock.targetX, rock.currentY, rock.size, rock.size);
+                }
             }
         }
 
@@ -292,17 +313,28 @@ public class EarthMinigame extends Minigame {
 
         g2.setFont(new Font("Tahoma", Font.BOLD, 16));
         g2.setColor(new Color(0, 0, 0, 180));
-        g2.fillRect(arenaX, arenaY + arenaH + 12, 210, 35);
+        g2.fillRect(arenaX, arenaY + arenaH + 12, 220, 35);
         g2.setColor(Color.GREEN);
-        g2.drawString("Hero HP: " + hero.getHp() + "/" + hero.getMaxHp(), arenaX + 10, arenaY + arenaH + 35);
+        g2.drawString("HP: " + hero.getHp() + " | ATK: " + hero.getAtk(), arenaX + 12, arenaY + arenaH + 35);
 
         g2.setColor(new Color(0, 0, 0, 180));
-        g2.fillRect(enemyX, enemyY + enemyH + 10, 210, 35);
+        g2.fillRect(enemyX, enemyY + enemyH + 10, 220, 35);
         g2.setColor(Color.RED);
-        g2.drawString(currentEnemy.getName() + " HP: " + currentEnemy.getHp(), enemyX + 10, enemyY + enemyH + 33);
+        g2.drawString("HP: " + currentEnemy.getHp() + " | ATK: " + currentEnemy.getAtk(), enemyX + 12, enemyY + enemyH + 33);
 
-        g2.setFont(new Font("Tahoma", Font.BOLD, 18));
-        g2.setColor(Color.YELLOW);
-        g2.drawString(message, (screenW - g2.getFontMetrics().stringWidth(message)) / 2, (int) (screenH * 0.10));
+        if (isFinished) {
+            g2.setColor(new Color(0, 0, 0, 180));
+            g2.fillRect(0, 0, screenW, screenH);
+            if ("VICTORY!".equals(message) && victoryImage != null) {
+                g2.drawImage(victoryImage, 0, 0, screenW, screenH, null);
+            } else if ("GAME OVER!".equals(message) && gameOverImage != null) {
+                g2.drawImage(gameOverImage, 0, 0, screenW, screenH, null);
+            }
+        } else if (message != null && !message.isEmpty()) {
+            g2.setFont(new Font("Tahoma", Font.BOLD, 22));
+            g2.setColor(Color.YELLOW);
+            int textWidth = g2.getFontMetrics().stringWidth(message);
+            g2.drawString(message, (screenW - textWidth) / 2, (int) (screenH * 0.10));
+        }
     }
 }
