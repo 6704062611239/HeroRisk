@@ -52,29 +52,29 @@ public class GamePanel extends JPanel implements Runnable {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setDoubleBuffered(true);
 
-        bgImage = ImageIO.read(new File("res/bg_main.jpg"));
-        logoImage = ImageIO.read(new File("res/logo.png"));
-        btnStage1 = ImageIO.read(new File("res/btn_stage1.jpg"));
-        btnStage2 = ImageIO.read(new File("res/btn_stage2.jpg"));
-        btnStage3 = ImageIO.read(new File("res/btn_stage3.jpg"));
+        bgImage = ImageIO.read(getClass().getResourceAsStream("/res/bg_main.jpg"));
+        logoImage = ImageIO.read(getClass().getResourceAsStream("/res/logo.png"));
+        btnStage1 = ImageIO.read(getClass().getResourceAsStream("/res/btn_stage1.jpg"));
+        btnStage2 = ImageIO.read(getClass().getResourceAsStream("/res/btn_stage2.jpg"));
+        btnStage3 = ImageIO.read(getClass().getResourceAsStream("/res/btn_stage3.jpg"));
 
-        bgStageWater = ImageIO.read(new File("res/bg_water.jpg"));
-        bgStageFire = ImageIO.read(new File("res/bg_fire.jpg"));
-        bgStageEarth = ImageIO.read(new File("res/bg_earth.jpg"));
+        bgStageWater = ImageIO.read(getClass().getResourceAsStream("/res/bg_water.jpg"));
+        bgStageFire = ImageIO.read(getClass().getResourceAsStream("/res/bg_fire.jpg"));
+        bgStageEarth = ImageIO.read(getClass().getResourceAsStream("/res/bg_earth.jpg"));
 
-        btnBack = ImageIO.read(new File("res/back_btn.png"));
+        btnBack = ImageIO.read(getClass().getResourceAsStream("/res/back_btn.png"));
 
-        enemy1W = ImageIO.read(new File("res/enemy1W.png"));
-        enemy2W = ImageIO.read(new File("res/enemy2W.png"));
-        enemy3W = ImageIO.read(new File("res/enemy3W.png"));
-        enemy1F = ImageIO.read(new File("res/enemy1F.png"));
-        enemy2F = ImageIO.read(new File("res/enemy2F.png"));
-        enemy3F = ImageIO.read(new File("res/enemy3F.png"));
-        enemy1E = ImageIO.read(new File("res/enemy1E.png"));
-        enemy2E = ImageIO.read(new File("res/enemy2E.png"));
-        enemy3E = ImageIO.read(new File("res/enemy3E.png"));
+        enemy1W = ImageIO.read(getClass().getResourceAsStream("/res/enemy1W.png"));
+        enemy2W = ImageIO.read(getClass().getResourceAsStream("/res/enemy2W.png"));
+        enemy3W = ImageIO.read(getClass().getResourceAsStream("/res/enemy3W.png"));
+        enemy1F = ImageIO.read(getClass().getResourceAsStream("/res/enemy1F.png"));
+        enemy2F = ImageIO.read(getClass().getResourceAsStream("/res/enemy2F.png"));
+        enemy3F = ImageIO.read(getClass().getResourceAsStream("/res/enemy3F.png"));
+        enemy1E = ImageIO.read(getClass().getResourceAsStream("/res/enemy1E.png"));
+        enemy2E = ImageIO.read(getClass().getResourceAsStream("/res/enemy2E.png"));
+        enemy3E = ImageIO.read(getClass().getResourceAsStream("/res/enemy3E.png"));
         
-        weapon = ImageIO.read(new File("res/weapon.png"));
+        weapon = ImageIO.read(getClass().getResourceAsStream("/res/weapon.png"));
 
         playerHero = new Hero(100, 15);
 

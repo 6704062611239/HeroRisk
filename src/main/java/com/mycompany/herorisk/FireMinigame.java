@@ -48,38 +48,38 @@ public class FireMinigame extends Minigame {
 
         BufferedImage[] impFrames = new BufferedImage[2];
         try {
-            impFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy1F.png"));
-            impFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy1F2.png"));
+            impFrames[0] = javax.imageio.ImageIO.read(getClass().getResourceAsStream("/res/enemy1F.png"));
+            impFrames[1] = javax.imageio.ImageIO.read(getClass().getResourceAsStream("/res/enemy1F2.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         BufferedImage[] demonFrames = new BufferedImage[3];
         try {
-            demonFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2F.png"));
-            demonFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2F2.png"));
-            demonFrames[2] = javax.imageio.ImageIO.read(new java.io.File("res/enemy2F3.png"));
+            demonFrames[0] = javax.imageio.ImageIO.read(getClass().getResourceAsStream("/res/enemy2F.png"));
+            demonFrames[1] = javax.imageio.ImageIO.read(getClass().getResourceAsStream("/res/enemy2F2.png"));
+            demonFrames[2] = javax.imageio.ImageIO.read(getClass().getResourceAsStream("/res/enemy2F3.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         BufferedImage[] bossFrames = new BufferedImage[2];
         try {
-            bossFrames[0] = javax.imageio.ImageIO.read(new java.io.File("res/enemy3F.png"));
-            bossFrames[1] = javax.imageio.ImageIO.read(new java.io.File("res/enemy3F3.png"));
+            bossFrames[0] = javax.imageio.ImageIO.read(getClass().getResourceAsStream("/res/enemy3F.png"));
+            bossFrames[1] = javax.imageio.ImageIO.read(getClass().getResourceAsStream("/res/enemy3F3.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            this.fireballImage = javax.imageio.ImageIO.read(new java.io.File("res/fireball.png"));
+            this.fireballImage = javax.imageio.ImageIO.read(getClass().getResourceAsStream("/res/fireball.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            victoryImage = javax.imageio.ImageIO.read(new java.io.File("res/victory.png"));
-            gameOverImage = javax.imageio.ImageIO.read(new java.io.File("res/gameover.png"));
+            victoryImage = javax.imageio.ImageIO.read(getClass().getResourceAsStream("/res/victory.png"));
+            gameOverImage = javax.imageio.ImageIO.read(getClass().getResourceAsStream("/res/gameover.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }

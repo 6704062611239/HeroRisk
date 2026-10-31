@@ -15,9 +15,9 @@ public class Hero extends Character {
         super(hp, atk, null); 
 
         try {
-            idleFrames[0] = ImageIO.read(new File("res/hero.png"));
-            idleFrames[1] = ImageIO.read(new File("res/hero2.png"));
-            idleFrames[2] = ImageIO.read(new File("res/hero3.png"));
+            idleFrames[0] = ImageIO.read(getClass().getResourceAsStream("/res/hero.png"));
+            idleFrames[1] = ImageIO.read(getClass().getResourceAsStream("/res/hero2.png"));
+            idleFrames[2] = ImageIO.read(getClass().getResourceAsStream("/res/hero3.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
