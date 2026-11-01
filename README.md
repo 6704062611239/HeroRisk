@@ -163,7 +163,4 @@ classDiagram
   GamePanel ..> FireMinigame : creates
   GamePanel ..> EarthMinigame : creates
   HeroRisk ..> GamePanel : creates
-
-  classDef plain fill:#ffffff,stroke:#000000,stroke-width:1.5px,color:#000000
-  class Character,Hero,Enemy,Minigame,WaterMinigame,FireMinigame,EarthMinigame,GameObject,Rock,Sword,GamePanel,HeroRisk,JPanel,Runnable plain
 ```
