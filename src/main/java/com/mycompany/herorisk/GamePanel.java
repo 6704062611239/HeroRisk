@@ -7,7 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
+import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class GamePanel extends JPanel implements Runnable {
@@ -15,7 +15,7 @@ public class GamePanel extends JPanel implements Runnable {
     final int screenWidth = 800;
     final int screenHeight = 600;
 
-    int gameState = 0; 
+    int gameState = 0;
 
     Thread gameThread;
     Image bgImage;
@@ -39,42 +39,32 @@ public class GamePanel extends JPanel implements Runnable {
     Image bgStageFire;
     Image bgStageEarth;
 
-    Image enemy1W, enemy2W, enemy3W;
-    Image enemy1F, enemy2F, enemy3F;
-    Image enemy1E, enemy2E, enemy3E;
-
     Hero playerHero;
     Minigame activeMinigame;
-    
+
     Image weapon;
 
-    public GamePanel() throws Exception {
+    public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setDoubleBuffered(true);
 
-        bgImage = ImageIO.read(getClass().getResourceAsStream("/res/bg_main.jpg"));
-        logoImage = ImageIO.read(getClass().getResourceAsStream("/res/logo.png"));
-        btnStage1 = ImageIO.read(getClass().getResourceAsStream("/res/btn_stage1.jpg"));
-        btnStage2 = ImageIO.read(getClass().getResourceAsStream("/res/btn_stage2.jpg"));
-        btnStage3 = ImageIO.read(getClass().getResourceAsStream("/res/btn_stage3.jpg"));
+        try {
+            bgImage = ImageIO.read(getClass().getResourceAsStream("/res/bg_main.jpg"));
+            logoImage = ImageIO.read(getClass().getResourceAsStream("/res/logo.png"));
+            btnStage1 = ImageIO.read(getClass().getResourceAsStream("/res/btn_stage1.jpg"));
+            btnStage2 = ImageIO.read(getClass().getResourceAsStream("/res/btn_stage2.jpg"));
+            btnStage3 = ImageIO.read(getClass().getResourceAsStream("/res/btn_stage3.jpg"));
 
-        bgStageWater = ImageIO.read(getClass().getResourceAsStream("/res/bg_water.jpg"));
-        bgStageFire = ImageIO.read(getClass().getResourceAsStream("/res/bg_fire.jpg"));
-        bgStageEarth = ImageIO.read(getClass().getResourceAsStream("/res/bg_earth.jpg"));
+            bgStageWater = ImageIO.read(getClass().getResourceAsStream("/res/bg_water.jpg"));
+            bgStageFire = ImageIO.read(getClass().getResourceAsStream("/res/bg_fire.jpg"));
+            bgStageEarth = ImageIO.read(getClass().getResourceAsStream("/res/bg_earth.jpg"));
 
-        btnBack = ImageIO.read(getClass().getResourceAsStream("/res/back_btn.png"));
+            btnBack = ImageIO.read(getClass().getResourceAsStream("/res/back_btn.png"));
 
-        enemy1W = ImageIO.read(getClass().getResourceAsStream("/res/enemy1W.png"));
-        enemy2W = ImageIO.read(getClass().getResourceAsStream("/res/enemy2W.png"));
-        enemy3W = ImageIO.read(getClass().getResourceAsStream("/res/enemy3W.png"));
-        enemy1F = ImageIO.read(getClass().getResourceAsStream("/res/enemy1F.png"));
-        enemy2F = ImageIO.read(getClass().getResourceAsStream("/res/enemy2F.png"));
-        enemy3F = ImageIO.read(getClass().getResourceAsStream("/res/enemy3F.png"));
-        enemy1E = ImageIO.read(getClass().getResourceAsStream("/res/enemy1E.png"));
-        enemy2E = ImageIO.read(getClass().getResourceAsStream("/res/enemy2E.png"));
-        enemy3E = ImageIO.read(getClass().getResourceAsStream("/res/enemy3E.png"));
-        
-        weapon = ImageIO.read(getClass().getResourceAsStream("/res/weapon.png"));
+            weapon = ImageIO.read(getClass().getResourceAsStream("/res/weapon.png"));
+        }catch(IOException e){
+            e.printStackTrace();
+        }
 
         playerHero = new Hero(100, 15);
 

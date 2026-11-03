@@ -206,19 +206,10 @@ public class FireMinigame extends Minigame {
             if (obj.isWeapon) {
                 if (weaponImage != null) {
                     g2.drawImage(weaponImage, (int) obj.x, objY, objSize, objSize, null);
-                } else {
-                    g2.setColor(Color.YELLOW);
-                    g2.fillOval((int) obj.x, objY, objSize, objSize);
-                    g2.setColor(Color.BLACK);
-                    g2.setFont(new Font("Tahoma", Font.BOLD, 18));
-                    g2.drawString("🗡", (int) obj.x + 8, objY + 24);
                 }
             } else {
                 if (fireballImage != null) {
                     g2.drawImage(fireballImage, (int) obj.x, objY, objSize, objSize, null);
-                } else {
-                    g2.setColor(Color.RED);
-                    g2.fillOval((int) obj.x, objY, objSize, objSize);
                 }
             }
         }
@@ -249,6 +240,5 @@ public class FireMinigame extends Minigame {
             int textWidth = g2.getFontMetrics().stringWidth(message);
             g2.drawString(message, (screenW - textWidth) / 2, (int) (screenH * 0.10));
         }
-
     }
 }

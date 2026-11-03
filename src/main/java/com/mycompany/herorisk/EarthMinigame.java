@@ -281,12 +281,6 @@ public class EarthMinigame extends Minigame {
             } else {
                 if (rockImage != null) {
                     g2.drawImage(rockImage, rock.targetX, rock.currentY, rock.size, rock.size, null);
-                } else {
-                    g2.setColor(new Color(130, 95, 65));
-                    g2.fillOval(rock.targetX, rock.currentY, rock.size, rock.size);
-                    g2.setColor(Color.BLACK);
-                    g2.setStroke(new BasicStroke(2));
-                    g2.drawOval(rock.targetX, rock.currentY, rock.size, rock.size);
                 }
             }
         }
@@ -294,12 +288,6 @@ public class EarthMinigame extends Minigame {
         for (Sword sword : swords) {
             if (weaponImage != null) {
                 g2.drawImage(weaponImage, sword.x, sword.y, sword.size, sword.size, null);
-            } else {
-                g2.setColor(Color.YELLOW);
-                g2.fillOval(sword.x, sword.y, sword.size, sword.size);
-                g2.setColor(Color.BLACK);
-                g2.setFont(new Font("Tahoma", Font.BOLD, 18));
-                g2.drawString("🗡", sword.x + 6, sword.y + 23);
             }
         }
 
